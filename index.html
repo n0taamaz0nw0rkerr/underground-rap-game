@@ -410,12 +410,6 @@
         const autoModeBtn = document.getElementById('autoMode');
         const beatGrid = document.getElementById('beatGrid');
         const backgroundMusic = document.getElementById('backgroundMusic');
-        const musicToggle = document.getElementById('musicToggle');
-        const volumeSlider = document.getElementById('volumeSlider');
-        
-        // Music state
-        let musicEnabled = true;
-        let currentVolume = 0.3;
         
         // Create stars
         function createStars() {
@@ -509,33 +503,8 @@
         }
         
         // Music functions
-        function changeMusic() {
-            const rapper = rappers[gameState.currentRapperIndex];
-            if (musicEnabled && rapper.music) {
-                backgroundMusic.src = rapper.music;
-                backgroundMusic.volume = currentVolume;
-                backgroundMusic.play().catch(e => {
-                    console.log('Music autoplay blocked, user interaction required');
-                });
-            }
-        }
-        
-        function toggleMusic() {
-            musicEnabled = !musicEnabled;
-            if (musicEnabled) {
-                musicToggle.textContent = '🎵 MUSIC: ON';
-                changeMusic();
-            } else {
-                musicToggle.textContent = '🔇 MUSIC: OFF';
-                backgroundMusic.pause();
-            }
-        }
-        
-        function updateVolume() {
-            currentVolume = volumeSlider.value / 100;
-            backgroundMusic.volume = currentVolume;
-        }
-
+   
+    
         // Upgrade rapper
         function upgradeRapper() {
             const nextRapper = rappers[gameState.currentRapperIndex + 1];
