@@ -505,9 +505,6 @@
             if (rapper.music) {
                 backgroundMusic.src = rapper.music;
                 backgroundMusic.volume = 0.3;
-                backgroundMusic.play().catch(e => {
-                    console.log('Music autoplay blocked, user interaction required');
-                });
             }
         }
 
