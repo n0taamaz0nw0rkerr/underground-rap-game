@@ -324,16 +324,7 @@
                         XP: <span id="xp">0</span>/<span id="xpNeeded">100</span>
                     </div>
                 </div>
-                <div class="music-controls">
-                    <button class="btn" id="musicToggle" style="width: 100%; margin-bottom: 10px;">
-                        🎵 MUSIC: ON
-                    </button>
-                    <div class="volume-control">
-                        <label style="color: #00ffff; font-size: 0.8rem;">VOLUME</label><br>
-                        <input type="range" id="volumeSlider" min="0" max="100" value="30" 
-                               style="background: linear-gradient(90deg, #ff00ff, #00ffff);">
-                    </div>
-                </div>
+            
                 <button class="btn" id="upgradeBtn" style="width: 100%;">
                     UPGRADE RAPPER
                     <div class="upgrade-cost">$<span id="upgradeCost">1000</span></div>
@@ -343,7 +334,7 @@
     </div>
 
     <!-- Audio elements for each rapper -->
-    <audio id="backgroundMusic" loop></audio>
+    <audio id="backgroundMusic" autoplay loop></audio>
 
     <script>
         alert('Game music may not work, try clicking the music button on/off lil bro')
