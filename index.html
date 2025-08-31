@@ -324,7 +324,6 @@
                         XP: <span id="xp">0</span>/<span id="xpNeeded">100</span>
                     </div>
                 </div>
-            
                 <button class="btn" id="upgradeBtn" style="width: 100%;">
                     UPGRADE RAPPER
                     <div class="upgrade-cost">$<span id="upgradeCost">1000</span></div>
@@ -334,11 +333,9 @@
     </div>
 
     <!-- Audio elements for each rapper -->
-    <audio id="backgroundMusic" autoplay loop></audio>
+    <audio id="backgroundMusic" loop></audio>
 
     <script>
-        alert('version beta 1.0 twin')
-              alert('This game is Parental Excplicit Content in the songs. ')
         // Game state
         let gameState = {
             money: 0,
@@ -350,7 +347,7 @@
             beatMultiplier: 1
         };
         
-        // Rapper progression with music URLs
+        // Rapper progression with music files
         const rappers = [
             { 
                 name: "BOOLYMON", 
@@ -364,7 +361,7 @@
                 avatar: "💀", 
                 cost: 1000, 
                 multiplier: 2,
-                music: "edward.mp3"
+                music: "edward-skeletrix.mp3"
             },
             { 
                 name: "NETTSPEND", 
@@ -385,14 +382,14 @@
                 avatar: "🌟", 
                 cost: 50000, 
                 multiplier: 6,
-                music: "janeremover.mp3"
+                music: "jane-remover.mp3"
             },
             { 
                 name: "PLAYBOI CARTI", 
                 avatar: "🔥", 
                 cost: 100000, 
                 multiplier: 10,
-                music: "carti.mp3"
+                music: "playboi-carti.mp3"
             }
         ];
         
@@ -503,8 +500,17 @@
         }
         
         // Music functions
-   
-    
+        function changeMusic() {
+            const rapper = rappers[gameState.currentRapperIndex];
+            if (rapper.music) {
+                backgroundMusic.src = rapper.music;
+                backgroundMusic.volume = 0.3;
+                backgroundMusic.play().catch(e => {
+                    console.log('Music autoplay blocked, user interaction required');
+                });
+            }
+        }
+
         // Upgrade rapper
         function upgradeRapper() {
             const nextRapper = rappers[gameState.currentRapperIndex + 1];
