@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Underground Rapper Simulator</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(45deg, #0f0f0f, #1a0033, #330066);
+            color: #00ff00;
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+        }
+        
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            animation: sparkle 3s linear infinite;
+        }
+        
+        .star {
+            position: absolute;
+            background: #fff;
+            width: 2px;
+            height: 2px;
+            border-radius: 50%;
+            animation: twinkle 2s linear infinite;
+        }
+        
+        @keyframes sparkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        .game-container {
+            position: relative;
+            z-index: 10;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px #00ffff;
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 5px #ff00ff); }
+            to { filter: drop-shadow(0 0 20px #00ffff); }
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        
+        .money {
+            color: #ffff00;
+            text-shadow: 0 0 10px #ffff00;
+        }
+        
+        .rapper-name {
+            color: #ff00ff;
+            text-shadow: 0 0 10px #ff00ff;
+        }
+        
+        .game-area {
+            flex: 1;
+            display: flex;
+            gap: 20px;
+        }
+        
+        .beat-maker {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #ff00ff;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 30px #ff00ff;
+        }
+        
+        .beat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .beat-pad {
+            aspect-ratio: 1;
+            border: 2px solid #00ffff;
+            border-radius: 8px;
+            background: linear-gradient(45deg, #001122, #003344);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: all 0.1s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .beat-pad:hover {
+            background: linear-gradient(45deg, #003344, #005566);
+            transform: scale(1.05);
+        }
+        
+        .beat-pad.active {
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            color: #000;
+            animation: pulse 0.3s;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .rapper-panel {
+            width: 250px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ff00;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 30px #00ff00;
+        }
+        
+        .rapper-avatar {
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .rapper-info {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .level-bar {
+            width: 100%;
+            height: 20px;
+            background: #001122;
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .level-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #ff00ff, #00ffff);
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        .controls {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: #000;
+            font-family: 'Orbitron', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 0, 255, 0.4);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 0, 255, 0.6);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .upgrade-cost {
+            font-size: 0.8rem;
+            color: #ffff00;
+        }
+        
+        .combo-counter {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #ffff00;
+            margin: 10px 0;
+            text-shadow: 0 0 10px #ffff00;
+        }
+        
+        .floating-money {
+            position: absolute;
+            color: #ffff00;
+            font-weight: bold;
+            pointer-events: none;
+            animation: floatUp 1s ease-out forwards;
+        }
+        
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0px);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+        }
+        
+        .music-controls {
+            text-align: center;
+            margin: 10px 0;
+        }
+        
+        .volume-control {
+            margin: 5px;
+        }
+        
+        .volume-control input {
+            width: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    
+    <div class="game-container">
+        <div class="header">
+            <h1 class="title">UNDERGROUND RAPPER SIMULATOR</h1>
+            <div class="stats">
+                <div class="money">💰 $<span id="money">0</span></div>
+                <div class="rapper-name" id="rapperName">BOOLYMON</div>
+            </div>
+        </div>
+        
+        <div class="game-area">
+            <div class="beat-maker">
+                <h3 style="text-align: center; margin-bottom: 15px; color: #00ffff;">BEAT MAKER</h3>
+                <div class="combo-counter">COMBO: <span id="combo">0</span></div>
+                <div class="beat-grid" id="beatGrid">
+                    <div class="beat-pad" data-sound="kick">🥁</div>
+                    <div class="beat-pad" data-sound="snare">📀</div>
+                    <div class="beat-pad" data-sound="hihat">⚡</div>
+                    <div class="beat-pad" data-sound="bass">🔊</div>
+                    <div class="beat-pad" data-sound="synth1">🎹</div>
+                    <div class="beat-pad" data-sound="synth2">🎵</div>
+                    <div class="beat-pad" data-sound="fx1">✨</div>
+                    <div class="beat-pad" data-sound="fx2">💫</div>
+                </div>
+                <div class="controls">
+                    <button class="btn" id="autoMode">AUTO MODE ($500)</button>
+                </div>
+            </div>
+            
+            <div class="rapper-panel">
+                <div class="rapper-avatar" id="rapperAvatar">🎤</div>
+                <div class="rapper-info">
+                    <div style="margin-bottom: 10px;">LEVEL <span id="level">1</span></div>
+                    <div class="level-bar">
+                        <div class="level-progress" id="levelProgress"></div>
+                    </div>
+                    <div style="font-size: 0.9rem; color: #00ffff;">
+                        XP: <span id="xp">0</span>/<span id="xpNeeded">100</span>
+                    </div>
+                </div>
+                <div class="music-controls">
+                    <button class="btn" id="musicToggle" style="width: 100%; margin-bottom: 10px;">
+                        🎵 MUSIC: ON
+                    </button>
+                    <div class="volume-control">
+                        <label style="color: #00ffff; font-size: 0.8rem;">VOLUME</label><br>
+                        <input type="range" id="volumeSlider" min="0" max="100" value="30" 
+                               style="background: linear-gradient(90deg, #ff00ff, #00ffff);">
+                    </div>
+                </div>
+                <button class="btn" id="upgradeBtn" style="width: 100%;">
+                    UPGRADE RAPPER
+                    <div class="upgrade-cost">$<span id="upgradeCost">1000</span></div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio elements for each rapper -->
+    <audio id="backgroundMusic" loop></audio>
+
+    <script>
+        // Game state
+        let gameState = {
+            money: 0,
+            xp: 0,
+            level: 1,
+            combo: 0,
+            currentRapperIndex: 0,
+            autoMode: false,
+            beatMultiplier: 1
+        };
+        
+        // Rapper progression with music URLs
+        const rappers = [
+            { 
+                name: "BOOLYMON", 
+                avatar: "🎤", 
+                cost: 0, 
+                multiplier: 1,
+                music: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav"
+            },
+            { 
+                name: "EDWARD SKELETRIX", 
+                avatar: "💀", 
+                cost: 1000, 
+                multiplier: 2,
+                music: "https://www.soundjay.com/misc/sounds/boing1.wav"
+            },
+            { 
+                name: "NETTSPEND", 
+                avatar: "💎", 
+                cost: 5000, 
+                multiplier: 3,
+                music: "https://www.soundjay.com/misc/sounds/bikehorn.wav"
+            },
+            { 
+                name: "OSAMASON", 
+                avatar: "👑", 
+                cost: 15000, 
+                multiplier: 4,
+                music: "https://www.soundjay.com/misc/sounds/duck.wav"
+            },
+            { 
+                name: "JANE REMOVER", 
+                avatar: "🌟", 
+                cost: 50000, 
+                multiplier: 6,
+                music: "https://www.soundjay.com/misc/sounds/fail-buzzer-02.wav"
+            },
+            { 
+                name: "PLAYBOI CARTI", 
+                avatar: "🔥", 
+                cost: 100000, 
+                multiplier: 10,
+                music: "https://www.soundjay.com/misc/sounds/fanfare.wav"
+            }
+        ];
+        
+        // DOM elements
+        const moneyEl = document.getElementById('money');
+        const comboEl = document.getElementById('combo');
+        const xpEl = document.getElementById('xp');
+        const xpNeededEl = document.getElementById('xpNeeded');
+        const levelEl = document.getElementById('level');
+        const levelProgressEl = document.getElementById('levelProgress');
+        const rapperNameEl = document.getElementById('rapperName');
+        const rapperAvatarEl = document.getElementById('rapperAvatar');
+        const upgradeBtn = document.getElementById('upgradeBtn');
+        const upgradeCostEl = document.getElementById('upgradeCost');
+        const autoModeBtn = document.getElementById('autoMode');
+        const beatGrid = document.getElementById('beatGrid');
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        const musicToggle = document.getElementById('musicToggle');
+        const volumeSlider = document.getElementById('volumeSlider');
+        
+        // Music state
+        let musicEnabled = true;
+        let currentVolume = 0.3;
+        
+        // Create stars
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 2 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        // Update UI
+        function updateUI() {
+            moneyEl.textContent = gameState.money;
+            comboEl.textContent = gameState.combo;
+            xpEl.textContent = gameState.xp;
+            levelEl.textContent = gameState.level;
+            
+            const rapper = rappers[gameState.currentRapperIndex];
+            rapperNameEl.textContent = rapper.name;
+            rapperAvatarEl.textContent = rapper.avatar;
+            
+            const xpNeeded = 100 * gameState.level;
+            xpNeededEl.textContent = xpNeeded;
+            const progress = (gameState.xp / xpNeeded) * 100;
+            levelProgressEl.style.width = progress + '%';
+            
+            // Update upgrade button
+            const nextRapper = rappers[gameState.currentRapperIndex + 1];
+            if (nextRapper) {
+                upgradeCostEl.textContent = nextRapper.cost;
+                upgradeBtn.disabled = gameState.money < nextRapper.cost;
+                upgradeBtn.innerHTML = `UPGRADE TO ${nextRapper.name}<div class="upgrade-cost">$${nextRapper.cost}</div>`;
+            } else {
+                upgradeBtn.innerHTML = 'MAX LEVEL REACHED!';
+                upgradeBtn.disabled = true;
+            }
+            
+            autoModeBtn.disabled = gameState.money < 500;
+        }
+        
+        // Show floating money
+        function showFloatingMoney(amount, element) {
+            const floatingMoney = document.createElement('div');
+            floatingMoney.className = 'floating-money';
+            floatingMoney.textContent = '+$' + amount;
+            
+            const rect = element.getBoundingClientRect();
+            floatingMoney.style.left = rect.left + rect.width / 2 + 'px';
+            floatingMoney.style.top = rect.top + 'px';
+            
+            document.body.appendChild(floatingMoney);
+            
+            setTimeout(() => {
+                document.body.removeChild(floatingMoney);
+            }, 1000);
+        }
+        
+        // Make beat
+        function makeBeat(element) {
+            const rapper = rappers[gameState.currentRapperIndex];
+            let earnings = (10 + gameState.combo) * rapper.multiplier * gameState.beatMultiplier;
+            
+            gameState.money += earnings;
+            gameState.xp += 5;
+            gameState.combo += 1;
+            
+            // Level up check
+            const xpNeeded = 100 * gameState.level;
+            if (gameState.xp >= xpNeeded) {
+                gameState.level += 1;
+                gameState.xp = 0;
+                gameState.beatMultiplier += 0.5;
+                showFloatingMoney('LEVEL UP!', element);
+            }
+            
+            // Combo decay
+            setTimeout(() => {
+                gameState.combo = Math.max(0, gameState.combo - 1);
+                updateUI();
+            }, 2000);
+            
+            showFloatingMoney(earnings, element);
+            element.classList.add('active');
+            setTimeout(() => element.classList.remove('active'), 300);
+            
+            updateUI();
+        }
+        
+        // Music functions
+        function changeMusic() {
+            const rapper = rappers[gameState.currentRapperIndex];
+            if (musicEnabled && rapper.music) {
+                backgroundMusic.src = rapper.music;
+                backgroundMusic.volume = currentVolume;
+                backgroundMusic.play().catch(e => {
+                    console.log('Music autoplay blocked, user interaction required');
+                });
+            }
+        }
+        
+        function toggleMusic() {
+            musicEnabled = !musicEnabled;
+            if (musicEnabled) {
+                musicToggle.textContent = '🎵 MUSIC: ON';
+                changeMusic();
+            } else {
+                musicToggle.textContent = '🔇 MUSIC: OFF';
+                backgroundMusic.pause();
+            }
+        }
+        
+        function updateVolume() {
+            currentVolume = volumeSlider.value / 100;
+            backgroundMusic.volume = currentVolume;
+        }
+
+        // Upgrade rapper
+        function upgradeRapper() {
+            const nextRapper = rappers[gameState.currentRapperIndex + 1];
+            if (nextRapper && gameState.money >= nextRapper.cost) {
+                gameState.money -= nextRapper.cost;
+                gameState.currentRapperIndex += 1;
+                gameState.combo = 0;
+                changeMusic(); // Change music when upgrading rapper
+                updateUI();
+            }
+        }
+        
+        // Auto mode
+        function toggleAutoMode() {
+            if (gameState.money >= 500 && !gameState.autoMode) {
+                gameState.money -= 500;
+                gameState.autoMode = true;
+                autoModeBtn.textContent = 'AUTO MODE ACTIVE';
+                autoModeBtn.disabled = true;
+                
+                const autoInterval = setInterval(() => {
+                    if (gameState.autoMode) {
+                        const randomPad = beatGrid.children[Math.floor(Math.random() * 8)];
+                        makeBeat(randomPad);
+                    } else {
+                        clearInterval(autoInterval);
+                    }
+                }, 800);
+                
+                // Auto mode lasts 30 seconds
+                setTimeout(() => {
+                    gameState.autoMode = false;
+                    autoModeBtn.textContent = 'AUTO MODE ($500)';
+                    updateUI();
+                }, 30000);
+            }
+        }
+        
+        // Event listeners
+        beatGrid.addEventListener('click', (e) => {
+            if (e.target.classList.contains('beat-pad')) {
+                makeBeat(e.target);
+            }
+        });
+        
+        upgradeBtn.addEventListener('click', upgradeRapper);
+        autoModeBtn.addEventListener('click', toggleAutoMode);
+        musicToggle.addEventListener('click', toggleMusic);
+        volumeSlider.addEventListener('input', updateVolume);
+        
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            const keys = ['1', '2', '3', '4', '5', '6', '7', '8'];
+            const index = keys.indexOf(e.key);
+            if (index !== -1) {
+                makeBeat(beatGrid.children[index]);
+            }
+        });
+        
+        // Initialize game
+        createStars();
+        updateUI();
+        
+        // Initialize music for the first rapper
+        setTimeout(() => {
+            changeMusic();
+        }, 1000);
+        
+        // Achievement system
+        function checkAchievements() {
+            if (gameState.money >= 10000 && !localStorage.getItem('first10k')) {
+                localStorage.setItem('first10k', 'true');
+                alert('🏆 ACHIEVEMENT UNLOCKED: First 10K!');
+            }
+            if (gameState.level >= 10 && !localStorage.getItem('level10')) {
+                localStorage.setItem('level10', 'true');
+                alert('🏆 ACHIEVEMENT UNLOCKED: Level 10 Producer!');
+            }
+        }
+        
+        // Check achievements periodically
+        setInterval(checkAchievements, 5000);
+    </script>
+</body>
+</html>
